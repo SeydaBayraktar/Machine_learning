@@ -10,9 +10,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from catboost import CatBoostClassifier
 from sklearn.base import BaseEstimator
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, roc_curve, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
 plt.ion()
 warnings.filterwarnings('ignore')
 
@@ -22,6 +25,21 @@ warnings.filterwarnings('ignore')
 data = pd.read_csv("C:/Users/ŞEYDA/Desktop/dataset.csv", sep=';', decimal=',')
 print(data.head())
 print(data.columns)
+print(data.describe())
+categorical_cols = data.select_dtypes(include=['object', 'category']).columns
+numerical_cols = data.select_dtypes(include=['int64', 'float64']).columns
+print(data.isnull().sum())
+
+for col in numerical_cols:
+    sns.histplot(data[col], kde=True)
+    plt.show()
+
+for col in categorical_cols:
+    sns.countplot(x=col, data=data)
+    plt.show()
+for col in numerical_cols:
+    sns.boxplot(x=data[col])
+    plt.show()
 
 # 2. initial  exploration
 
@@ -40,9 +58,9 @@ data=data[data['Inspection results'] != 'Pending']
 
 #4. Feature Engineering
 
-data = data.drop(['Lead times','Shipping times','Shipping carriers','Shipping costs','Transportation modes','Routes',
-                   'Price',	 'Number of products sold','Revenue generated','Stock levels','Lead times',	
-                    'Lead time', 'Production volumes', 'Costs','Lead time', 'Production volumes',	               
+data = data.drop(["Lead times","Shipping times","Shipping carriers","Shipping costs","Transportation modes","Routes",
+                  'Price',
+            
 ], axis=1)
 
 #5. Visualization
@@ -94,21 +112,12 @@ data_encoded = pd.get_dummies(
 )
 print(data_encoded.columns)
 # Features and target
-feature_cols = [ 
-    'Defect rates',
-    'Manufacturing lead time',
-    'Manufacturing costs',
-    #'Lead time',
-    #'Production volumes',
-    'Availability',
-    'Order quantities',
+feature_cols = [ 'Defect rates','Lead time', 'Revenue generated', 'Availability',"Production volumes",
+    'Product type_cosmetics',"Manufacturing lead time","Manufacturing costs",
+    'Product type_haircare',
     'Product type_skincare',
-    'Product type_cosmetics',
-    'Customer demographics_Female',
-    'Supplier name_Supplier 4',
-    'Supplier name_Supplier 5',
-    'Supplier name_Supplier 3'
-    
+    'Customer demographics_Female','Supplier name_Supplier 4',
+    'Supplier name_Supplier 3','Supplier name_Supplier 5',   
 ]
 X = data_encoded[feature_cols]
 y = LabelEncoder().fit_transform(data['Inspection results'])
@@ -155,8 +164,10 @@ plt.show()
 models = {
     "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
     "Random Forest": RandomForestClassifier(random_state=42),
-    "GBoosting": GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42)
+    "GBoosting": GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42),
+    "CATBoost": CatBoostClassifier(iterations=500,learning_rate=0.05,depth=6,loss_function='Logloss',eval_metric='Accuracy',verbose=False)
 }
+
 print(models)
 evaluator = ModelEvaluator(models)
 evaluator.train_evaluate(X_train, y_train, X_test, y_test)
