@@ -183,7 +183,7 @@ models = {
     "GBoosting": GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42),
     "CATBoost": CatBoostClassifier(iterations=500,learning_rate=0.05,depth=6,loss_function='Logloss',eval_metric='Accuracy',verbose=False),
     "XGBoost": XGBClassifier(n_estimators=300,learning_rate=0.05,max_depth=5,subsample=0.8,colsample_bytree=0.8,random_state=42, eval_metric="mlogloss"),
-    #"LGBM" : LGBMClassifier(n_estimators=500,learning_rate=0.05,max_depth=-1,subsample=0.8,colsample_bytree=0.8,random_state=42)
+    "LGBM" : LGBMClassifier(n_estimators=500,learning_rate=0.05,max_depth=-1,subsample=0.8,colsample_bytree=0.8,random_state=42)
 
 }
 
@@ -191,6 +191,7 @@ print(models)
 evaluator = ModelEvaluator(models)
 evaluator.train_evaluate(X_train, y_train, X_test, y_test)
 #plt.show(block=True)
+
 
 
 
