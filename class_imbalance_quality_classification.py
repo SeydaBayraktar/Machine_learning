@@ -191,21 +191,6 @@ print(models)
 evaluator = ModelEvaluator(models)
 evaluator.train_evaluate(X_train, y_train, X_test, y_test)
 #plt.show(block=True)
-# === CATBOOST TAHMİNLERİNİ EXCEL'E AKTARMA ===
 
-# 1. CatBoost modelini al
-cat_model = models["CATBoost"]
 
-# 2. CatBoost'u tüm veri üzerinde eğit
-cat_model.fit(X_scaled, y)
-
-# 3. Tahminleri üret
-data["Predicted_Quality_Label"] = cat_model.predict(X_scaled)
-data["Predicted_Quality_Prob_Fail"] = cat_model.predict_proba(X_scaled)[:, 1]
-
-# 4. Excel olarak kaydet
-output_path = "C:/Users/ŞEYDA/Desktop/quality_predictions.xlsx"
-data.to_excel(output_path, index=False)
-
-print("Tahminler başarıyla Excel'e kaydedildi:", output_path)
 
