@@ -2,10 +2,10 @@ import pandas as pd
 from ctgan import CTGAN
 from scipy.stats import chi2_contingency
 
-# 1) Veri setini yükle
+
 data = pd.read_csv("C:/Users/ŞEYDA/Desktop/supply_chain_data.csv", sep=",")
 
-# 2) Kategorik kolonlar
+# Kategorik kolonlar
 discrete_columns = [
     "Product type",
     "SKU",
@@ -18,17 +18,17 @@ discrete_columns = [
     "Location"
 ]
 
-# 3) CTGAN modeli
+# CTGAN modeli
 ctgan = CTGAN(epochs=300)
 ctgan.fit(data, discrete_columns)
 
-# 4) 200 yeni sentetik veri üret
+# 300 yeni sentetik veri 
 new_data = ctgan.sample(300)
 
-# 5) Yeni veri ile eski veriyi birleştir
+# Yeni veri ile eski veriyi birleştir
 augmented_data = pd.concat([data, new_data], ignore_index=True)
 
-# 6) Sonuçları göster
+# Sonuçları göster
 print("\n--- Orijinal sınıf dağılımı ---")
 print(data["Inspection results"].value_counts())
 
@@ -38,15 +38,12 @@ print(new_data["Inspection results"].value_counts())
 print("\n--- Birleştirilmiş veri seti sınıf dağılımı ---")
 print(augmented_data["Inspection results"].value_counts())
 
-# 7) Yeni veri setini kaydet
+#Yeni veri setini kaydet
 augmented_data.to_csv("C:/Users/ŞEYDA/Desktop/dataset_augmented.csv", index=False)
 print("\nYeni veri seti 'dataset_augmented.csv' olarak kaydedildi!")
 
-# --------------------------------------------------------
-# 8) Chi-Square (χ²) Testi — Kategorik kolonların dağılım benzerliği
-# --------------------------------------------------------
-
-categorical_cols = discrete_columns  # aynı listeyi kullanıyoruz
+# Chi-Square (χ²) Testi — Kategorik kolonların dağılım benzerliği
+categorical_cols = discrete_columns  
 
 print("\n\n==============================")
 print("   CHI-SQUARE (χ²) TEST SONUÇLARI")
@@ -75,4 +72,5 @@ for col in categorical_cols:
         print("✔ Dağılımlar BENZER — CTGAN bu kolonu doğru öğrenmiş.\n")
     else:
         print("✘ Dağılımlar farklı — CTGAN bu kolonu zayıf öğrenmiş.\n")
+
 
